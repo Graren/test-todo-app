@@ -1,26 +1,22 @@
-import React, { useContext } from "react";
+import React from "react";
 import cs from "classnames";
-import DatastoreContext from "../contexts/DatastoreContext.jsx";
 
-const Todo = ({ todo, onEdit }) => {
-  const { remove, update } = useContext(DatastoreContext);
+const Todo = ({ todo, selected, onEdit, toggleComplete, deleteTodo }) => {
   return (
     <div
       className={cs("todo", {
         complete: !!todo.status,
+        selected: selected,
       })}
     >
       <span>{todo.text}</span>
       <button type="button" onClick={() => onEdit(todo)}>
         Edit
       </button>
-      <button type="button" onClick={() => remove(todo.todoId)}>
+      <button type="button" onClick={() => deleteTodo(todo)}>
         Delete
       </button>
-      <button
-        type="button"
-        onClick={() => update(todo.todoId, { ...todo, status: !todo.status })}
-      >
+      <button type="button" onClick={() => toggleComplete(todo)}>
         Toggle complete
       </button>
     </div>

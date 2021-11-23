@@ -37,6 +37,10 @@
   color: green;
 }
 
+.selected {
+  border: 1px solid black;
+}
+
 .loading-background {
   z-index: 999;
   position: absolute;

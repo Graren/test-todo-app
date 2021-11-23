@@ -1,0 +1,40 @@
+- Create github repo
+- Create node project locally
+- Research electron installation
+- Build the database schema 
+- Build migrations
+- Tests make sure migrations work
+- Install Electron locally - make sure it works on all platforms
+- Install sqlite, react and any required packages
+- Make sure The config is using at least React 16
+- Fix eslint rules add prettier.
+- Provide installation instructions for team members on README
+- Remove placeholder code
+- Review the goals
+- Build presentational components that do not have much behavior
+- Styling said components
+- Prototype at least the visual component for a todo list
+- Prototype the component for a TODO
+- Add a global Loading context that displays a Spinner once long operations are happening
+- Put a react hook that handles keyboard events for a particular component
+- Use electron API to read the OS and switch the keys to make sure windows users and linux users can use shortcuts using control + key, and mac users can use command + key
+- Add this hook to the Todo component
+- Build tests for rendering both components (Snapshots/ mock functions for delete/update/create)
+- Implement blank methods - create / update / delete
+- Update the tests
+- SQLItedb handler - separate file exclusively inside directory: dbmanagers
+- React Context - that reads an environment variable determining which DB it's using or if it's API based
+- Provide an .env.sample to make sure new devs can copy and have the right variables
+- Build tests with mocked behavior to test context - switching and operations
+- React context initializes said db
+- Has wrapper methods for standard operations depending on each db
+- Build tests for wrapppers  to increase code cov, make sure all optiosn for the wrapper work
+- Use said context inside display components for todos
+  - ReadTodos inside TODO LIST - display spinner loader
+  - Populate the methods inside TODOS keyboard handlers with useContext and real behavior
+- At least build a context menu component and if needed replace the onmenu event. Can do most functions as well, CUD and Move up/down + toggle.
+- Build tests for said menu
+- I need to run suite and confirm converage and fix tests that need updating.
+- Build snapshot tests if components are not gonna change
+- Document the context, hook for buttons and, if needed the presentational components.
+- Document environment variables

@@ -9,29 +9,8 @@ import React, {
 import useDatasource from "../hooks/useDatasource.jsx";
 import LoadingContext from "./LoadingContext.jsx";
 
-const dummyData = [
-  {
-    todoId: 1,
-    text: "Text A",
-    priority: 1000,
-    status: false,
-  },
-  {
-    todoId: 2,
-    text: "Text B",
-    priority: 2000,
-    status: false,
-  },
-  {
-    todoId: 3,
-    text: "Text C",
-    priority: 3000,
-    status: true,
-  },
-];
-
 const initialState = {
-  todos: dummyData,
+  todos: [],
   store: () => null,
   update: () => null,
   remove: () => null,
@@ -47,51 +26,50 @@ export const DatastoreProvider = ({ children }) => {
 
   const datasource = useDatasource();
 
-  const store = useCallback(async (todo) => {
-    // datasource.store
-    setTodos((todos) => [...todos, todo]);
-  }, []);
+  const store = useCallback(
+    async (todo) => {
+      await datasource.store(todo);
+      setShouldLoad(true);
+    },
+    [datasource]
+  );
 
-  const update = useCallback((id, todo) => {
-    // datasource.update
-    setTodos((todos) =>
-      todos.map((t) => {
-        if (t.todoId === id) return todo;
-        return t;
-      })
-    );
-  }, []);
+  const update = useCallback(
+    async (id, todo) => {
+      await datasource.update(todo);
+      setShouldLoad(true);
+    },
+    [datasource]
+  );
 
-  const updatePriority = useCallback((id, todo, direction) => {
-    setTodos((todos) => {
-      const sorted = todos.sort((a, b) => a.priority - b.priority);
-      const index = sorted.map((t) => t.todoId).indexOf(todo.todoId);
+  const sortedTodos = useMemo(() => {
+    return todos.sort((a, b) => a.priority - b.priority);
+  }, [todos]);
 
-      const replacementElement = todos[index - direction];
+  const updatePriority = useCallback(
+    async (id, todo, direction) => {
+      const index = sortedTodos.map((t) => t.todoId).indexOf(todo.todoId);
+
+      const replacementElement = sortedTodos[index - direction];
 
       // don't move beyond array bounds
-      if (!replacementElement) return todos;
-      return todos.map((t) => {
-        if (t.todoId === id)
-          return {
-            ...todo,
-            priority: replacementElement.priority - direction,
-          };
-        return t;
+      if (!replacementElement) return;
+      await datasource.update({
+        ...todo,
+        priority: replacementElement.priority - direction,
       });
-    });
-  }, []);
+      setShouldLoad(true);
+    },
+    [datasource, sortedTodos]
+  );
 
-  const remove = useCallback((id) => {
-    // datasource.remove
-    setTodos((todos) =>
-      todos.filter((t) => {
-        return t.todoId !== id;
-      })
-    );
-  }, []);
-
-  // Add an use effect that does datasource.load
+  const remove = useCallback(
+    async (id) => {
+      await datasource.remove(id);
+      setShouldLoad(true);
+    },
+    [datasource]
+  );
 
   useEffect(() => {
     const get = async () => {
@@ -107,12 +85,8 @@ export const DatastoreProvider = ({ children }) => {
       }
     };
 
-    // if (datasource && shouldLoad) get();
+    if (datasource && shouldLoad) get();
   }, [datasource, hideLoading, shouldLoad, showLoading]);
-
-  const sortedTodos = useMemo(() => {
-    return todos.sort((a, b) => a.priority - b.priority);
-  }, [todos]);
 
   return (
     <DatastoreContext.Provider

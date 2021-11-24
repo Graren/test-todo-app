@@ -12,7 +12,7 @@ const CREATE_STATEMENT =
   "INSERT INTO TODO (text, priority, status) VALUES(?, ? , ?)";
 
 const UPDATE_STATEMENT =
-  "UPDATE TODO SET text = ?text, priority = ?priority, status = ?status WHERE todoId = ?todoId";
+  "UPDATE TODO SET text = $text, priority = $priority, status = $status WHERE todoId = $todoId";
 
 const DELETE_STATEMENT = "DELETE  FROM TODO WHERE todoId = ?";
 
@@ -31,14 +31,27 @@ ipcMain.on("create-todo", (event, arg) => {
 });
 
 ipcMain.on("update-todo", (event, arg) => {
-  const todo = JSON.parse(arg);
-  const stmt = database.prepare(UPDATE_STATEMENT);
-  stmt.run(todo, (err) => {
-    event.reply("update-todo-response", (err && "ERROR") || arg);
-  });
+  try {
+    const todo = JSON.parse(arg);
+
+    database.run(
+      UPDATE_STATEMENT,
+      {
+        $todoId: todo.todoId,
+        $text: todo.text,
+        $priority: todo.priority,
+        $status: todo.status ? 1 : 0,
+      },
+      (err) => {
+        event.reply("update-todo-response", (err && "ERROR") || arg);
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
 });
 
-ipcMain.on("delete-todo", (event, arg) => {
+ipcMain.on("remove-todo", (event, arg) => {
   const stmt = database.prepare(DELETE_STATEMENT);
   stmt.run(arg, (err) => {
     event.reply("remove-todo-response", (err && "ERROR") || arg);

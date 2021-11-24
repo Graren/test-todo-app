@@ -9,3 +9,5 @@ Built using `create-electron-app` with `--template=webppack`
 - Install NodeJS and make sure NPM is installed in case you install them separately
 - Run `npm install`
 - Copy `.env.sample` to a file named `.env`
+- Install Sqlite3 if it's not available in your OS by default - follow instructions for your OS
+- From the terminal run `sqlite3 todo.db < todoDB.sql`

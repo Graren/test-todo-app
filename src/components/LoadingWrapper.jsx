@@ -7,7 +7,7 @@ import "../app.css";
 
 const LoadingWrapper = ({ loading }) => {
   return loading ? (
-    <div className={cs("loading-background")}>
+    <div data-testid="test-loading" className={cs("loading-background")}>
       <p>loading...</p>
     </div>
   ) : null;

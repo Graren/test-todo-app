@@ -11,7 +11,7 @@ const Instructions = ({ todo }) => {
 
       {todo && (
         <Fragment>
-          <p className={"instructions-row"}>
+          <p data-testid="test-instructions-delete" className={"instructions-row"}>
             CTRL / Command key + D: Delete TODO
           </p>
           <p className={"instructions-row"}>

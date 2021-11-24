@@ -4,6 +4,7 @@ import cs from "classnames";
 const Todo = ({ todo, selected, onEdit }) => {
   return (
     <div
+      data-testid={`test-todo-${todo.todoId}`}
       className={cs("todo", "clickable", {
         complete: !!todo.status,
         selected: selected && !todo.status,

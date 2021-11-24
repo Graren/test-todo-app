@@ -14,41 +14,33 @@ const useKeyboardEvents = (todo, updatePriority, save, remove, toggle) => {
   const commandPressed = useKeyPress(commandCode);
 
   useEffect(() => {
-      // prevent multiple execution
-    if (commandPressed) {
+    if (todo && commandPressed && dPressed) {
+      remove(todo.todoId);
+    }
+  }, [commandPressed, dPressed, remove, todo]);
+
+  useEffect(() => {
+    if (todo && commandPressed) {
       if (arrowUpPressed) {
         updatePriority(todo, 1);
-      }
-
-      if (arrowDownPressed) {
+      } else if (arrowDownPressed) {
         updatePriority(todo, -1);
       }
-
-      if (dPressed) {
-        remove(todo.todoId);
-      }
-
-      if (sPressed) {
-        save();
-      }
-
-      if (tPressed) {
-        toggle(todo);
-      }
     }
-  }, [
-    commandPressed,
-    dPressed,
-    arrowUpPressed,
-    arrowDownPressed,
-    sPressed,
-    tPressed,
-    updatePriority,
-    remove,
-    save,
-    toggle,
-    todo,
-  ]);
+  }, [arrowDownPressed, arrowUpPressed, commandPressed, todo, updatePriority]);
+
+  // Only works for updating not creating, relying on todo structure for memoization, without it it's a bit more brittle
+  useEffect(() => {
+    if (todo && commandPressed && sPressed) {
+      save();
+    }
+  }, [commandPressed, sPressed, save, todo]);
+
+  useEffect(() => {
+    if (todo && commandPressed && tPressed) {
+      toggle(todo);
+    }
+  }, [commandPressed, tPressed, todo, toggle]);
 
   return {
     commandPressed,

@@ -13,7 +13,7 @@ const Todo = ({ todo, selected, onEdit, toggleComplete, deleteTodo }) => {
       <button type="button" onClick={() => onEdit(todo)}>
         Edit
       </button>
-      <button type="button" onClick={() => deleteTodo(todo)}>
+      <button type="button" onClick={() => deleteTodo(todo.todoId)}>
         Delete
       </button>
       <button type="button" onClick={() => toggleComplete(todo)}>

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import cs from "classnames";
 import DatastoreContext from "../contexts/DatastoreContext.jsx";
 import Todo from "./Todo.jsx";
@@ -9,40 +9,23 @@ const CREATING = "CREATING";
 const UPDATING = "UPDATING";
 
 const TodoList = () => {
-  const { todos, store, update, remove } = useContext(DatastoreContext);
+  const { todos, store, update, remove, updatePriority } =
+    useContext(DatastoreContext);
   const [status, setStatus] = useState(CREATING);
   const [text, setText] = useState("");
   const [todo, setTodo] = useState(null);
 
-  const sortedTodos = useMemo(() => {
-    return todos.sort((a, b) => a.priority - b.priority);
-  });
-
-  // 1 means prio up, -1 means prio down
-  const updatePriority = useCallback(
-    (todo, direction = 1) => {
-      const index = sortedTodos.map((t) => t.todoId).indexOf(todo.todoId);
-
-      const replacementElement = todos[index + direction];
-
-      // don't move beyond array bounds
-      if (!replacementElement) return;
-      else
-        update(todo.todoId, {
-          ...todo,
-          priority: replacementElement.priority - direction,
-        });
-    },
-    [update]
-  );
-
-  const onPressConfirm = useCallback(async () => {
+  const resetStatus = useCallback(() => {
     setText("");
     setTodo(null);
     setStatus(CREATING);
+  }, []);
+
+  const onPressConfirm = useCallback(async () => {
     if (text) {
       if (status === CREATING)
         await store({
+          todoId: 10,
           text,
           status: 0,
           priority:
@@ -54,7 +37,8 @@ const TodoList = () => {
           text,
         });
     }
-  }, [text, status, todo, store, update]);
+    resetStatus();
+  }, [resetStatus, text, status, store, todos, update, todo]);
 
   const onEdit = useCallback((todo) => {
     setText(todo.text);
@@ -62,16 +46,42 @@ const TodoList = () => {
     setStatus(UPDATING);
   }, []);
 
-  const toggleComplete = useCallback((todo) => {
-    return update(todo.todoId, { ...todo, status: !todo.status });
-  }, []);
+  const wrappedUpdate = useCallback(
+    (fn) => {
+      return async (...args) => {
+        resetStatus();
+        await fn(...args);
+      };
+    },
+    [resetStatus]
+  );
 
-  const deleteTodo = useCallback((todoId) => remove(todoId), []);
+  const _toggleComplete = useCallback(
+    (todo) => {
+      return update(todo.todoId, { ...todo, status: !todo.status });
+    },
+    [update]
+  );
+
+  const _deleteTodo = useCallback((todoId) => remove(todoId), [remove]);
+
+  // 1 means prio up, -1 means prio down
+  const _updatePriority = useCallback(
+    async (todo, direction = 1) => {
+      return updatePriority(todo.todoId, todo, direction);
+    },
+    [updatePriority]
+  );
+
+  const toggleComplete = wrappedUpdate(_toggleComplete);
+  const deleteTodo = wrappedUpdate(_deleteTodo);
+  const updatePriorityWrapped = wrappedUpdate(_updatePriority);
 
   useKeyboardEvents(
     todo,
-    updatePriority,
-    onPressConfirm.deleteTodo,
+    updatePriorityWrapped,
+    onPressConfirm,
+    deleteTodo,
     toggleComplete
   );
 
@@ -89,7 +99,7 @@ const TodoList = () => {
       </div>
       <div className={cs("todo-list")}>
         {todos &&
-          sortedTodos.map((t) => {
+          todos.map((t) => {
             return (
               <Todo
                 key={t.todoId}

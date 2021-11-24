@@ -5,12 +5,20 @@ import useKeyPress from "./useKeyPress";
 
 const commandCode = process.platform === "darwin" ? "OSLeft" : "ControlLeft"; // command for mac and control for the rest
 
-const useKeyboardEvents = (todo, updatePriority, save, remove, toggle) => {
+const useKeyboardEvents = (
+  todo,
+  updatePriority,
+  save,
+  remove,
+  toggle,
+  cancel
+) => {
   const arrowUpPressed = useKeyPress("ArrowUp");
   const arrowDownPressed = useKeyPress("ArrowDown");
   const dPressed = useKeyPress("KeyD");
   const sPressed = useKeyPress("KeyS");
   const tPressed = useKeyPress("KeyT");
+  const escapePressed = useKeyPress("Escape");
   const commandPressed = useKeyPress(commandCode);
 
   useEffect(() => {
@@ -41,6 +49,12 @@ const useKeyboardEvents = (todo, updatePriority, save, remove, toggle) => {
       toggle(todo);
     }
   }, [commandPressed, tPressed, todo, toggle]);
+
+  useEffect(() => {
+    if (todo && escapePressed) {
+      cancel();
+    }
+  }, [cancel, escapePressed, todo]);
 
   return {
     commandPressed,

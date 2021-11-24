@@ -1,24 +1,17 @@
 import React from "react";
 import cs from "classnames";
 
-const Todo = ({ todo, selected, onEdit, toggleComplete, deleteTodo }) => {
+const Todo = ({ todo, selected, onEdit }) => {
   return (
     <div
-      className={cs("todo", {
+      className={cs("todo", "clickable", {
         complete: !!todo.status,
-        selected: selected,
+        selected: selected && !todo.status,
+        "complete-selected": selected && todo.status,
       })}
+      onClick={() => onEdit(todo)}
     >
       <span>{todo.text}</span>
-      <button type="button" onClick={() => onEdit(todo)}>
-        Edit
-      </button>
-      <button type="button" onClick={() => deleteTodo(todo.todoId)}>
-        Delete
-      </button>
-      <button type="button" onClick={() => toggleComplete(todo)}>
-        Toggle complete
-      </button>
     </div>
   );
 };

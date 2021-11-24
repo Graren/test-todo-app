@@ -3,6 +3,7 @@ import cs from "classnames";
 import DatastoreContext from "../contexts/DatastoreContext.jsx";
 import Todo from "./Todo.jsx";
 import useKeyboardEvents from "../hooks/useKeyboardEvents.jsx";
+import Instructions from "./Instructions.jsx";
 
 const CREATING = "CREATING";
 
@@ -65,7 +66,7 @@ const TodoList = () => {
 
   const _deleteTodo = useCallback((todoId) => remove(todoId), [remove]);
 
-  // 1 means prio up, -1 means prio down
+  // 1 means priority up, -1 means priority down
   const _updatePriority = useCallback(
     async (todo, direction = 1) => {
       return updatePriority(todo.todoId, todo, direction);
@@ -82,7 +83,8 @@ const TodoList = () => {
     updatePriorityWrapped,
     onPressConfirm,
     deleteTodo,
-    toggleComplete
+    toggleComplete,
+    resetStatus
   );
 
   return (
@@ -92,11 +94,17 @@ const TodoList = () => {
           type="text"
           value={text}
           onChange={({ target: { value } }) => setText(value)}
+          className={"todo-input__input"}
         />
-        <button type="button" onClick={() => onPressConfirm()}>
+        <button
+          type="button"
+          className={"todo-input__button"}
+          onClick={() => onPressConfirm()}
+        >
           Confirm
         </button>
       </div>
+      <Instructions todo={todo} />
       <div className={cs("todo-list")}>
         {todos &&
           todos.map((t) => {
